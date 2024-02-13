@@ -1,0 +1,85 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id       Int      @id @default(autoincrement())
+  username String   @db.VarChar(40)
+  email    String   @unique @db.VarChar(40)
+  password String
+  members  Member[]
+}
+
+model Circle {
+  id         Int      @id @default(autoincrement())
+  circleName String   @map("circle_name") @db.VarChar(40)
+  isActive   Boolean  @default(true) @map("is_active")
+  members    Member[]
+  bills      Bill[]
+}
+
+enum MemberRole {
+  AUTHOR
+  COAUTHOR
+  GUEST
+}
+
+model Member {
+  id          Int           @id @default(autoincrement())
+  circleId    Int           @map("circle_id")
+  circle      Circle        @relation(fields: [circleId], references: [id])
+  userId      Int           @map("user_id")
+  user        User          @relation(fields: [userId], references: [id])
+  role        MemberRole    @default(AUTHOR)
+  bots        Bot[]
+  participant Participant[]
+}
+
+model Bot {
+  id       Int     @id @default(autoincrement())
+  botName  String  @map("bot_name") @db.VarChar(40)
+  memberId Int     @map("member_id")
+  member   Member  @relation(fields: [memberId], references: [id])
+  email    String? @db.VarChar(40)
+}
+
+model Bill {
+  id          Int           @id @default(autoincrement())
+  circleId    Int           @map("circle_id")
+  circle      Circle        @relation(fields: [circleId], references: [id])
+  title       String        @db.VarChar(60)
+  amount      Decimal       @db.Decimal(9, 2)
+  billDate    DateTime      @map("bill_date") @db.Date
+  createdAt   DateTime      @default(now()) @map("created_at") @db.Timestamp(0)
+  updatedAt   DateTime      @updatedAt @map("updated_at") @db.Timestamp(0)
+  isActive    Boolean       @default(true) @map("is_active")
+  participant Participant[]
+}
+
+enum SplitMethod {
+  FIXED
+  SHARE
+  MIXED
+}
+
+enum ParticipantRole {
+  CREDITOR
+  DEBTOR
+}
+
+model Participant {
+  id           Int             @id @default(autoincrement())
+  billId       Int             @map("bill_id")
+  bill         Bill            @relation(fields: [billId], references: [id])
+  memberId     Int             @map("member_id")
+  member       Member          @relation(fields: [memberId], references: [id])
+  splitMethod  SplitMethod     @default(FIXED) @map("split_method")
+  percentValue Decimal         @map("percent_value") @db.Decimal(9, 2)
+  fixedValue   Decimal         @map("fixed_value") @db.Decimal(9, 2)
+  role         ParticipantRole @default(DEBTOR)
+}
