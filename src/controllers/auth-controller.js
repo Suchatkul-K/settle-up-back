@@ -1,6 +1,7 @@
 import prisma from "../models/prisma.js";
 import * as userService from "../services/user-service.js"
 import * as hashService from "../services/hash-service.js"
+import * as jwtService from "../services/jwt-service.js"
 
 export async function register  (req,res,next) {
     try {
@@ -10,13 +11,17 @@ export async function register  (req,res,next) {
             return res.status(400).json({message: "invalid, user email already in use"})
         }
         const hashPassword = await hashService.hash(req.body.password)
-        // console.log(hashPassword);
         req.body.password = hashPassword
-        await userService.createUser(req.body)
-        // console.log(req.body);
-        res.status(201).json({message: "create user"})
+        delete req.body.confirmPassword
+
+        const newUser = await userService.createUser({data : req.body})
+        delete newUser.password
+        const accessToken = jwtService.sign({ userId : newUser.id})
+
+        res.status(201).json({ accessToken, newUser})
     } catch (error) {
         console.log(error);
+        next();
     }
     
 }
@@ -25,13 +30,20 @@ export async function login (req,res,next) {
     try {
         const existUser = await userService.getUserByEmail(req.body.email)
         if(!existUser) {
-            return res.status(401).json({message: "invalid: registered user"})
+            return res.status(400).json({message: "invalid: unregistered user"})
         }
         // compare pass
+        const matchingPass = await hashService.compare(req.body.password,existUser.password)
+        if(!matchingPass) {
+            return res.status(400).json({message: "invalid: incorrect password"})
+        }
         // jwt
+        const accessToken = jwtService.sign({ userId : existUser.id})
         delete existUser.password
-        res.status(200).json({message: "login success", existUser})
+
+        res.status(200).json({accessToken, existUser})
     } catch (error) {
         console.log(error);
+        next()
     }
 }
