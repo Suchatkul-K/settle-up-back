@@ -4,6 +4,24 @@ import * as userService from "../services/user-service.js";
 import catchError from "../utils/catch-error.js";
 import createError from "../utils/create-error.js";
 
+export async function updateUser(req,res,next) {
+  try {
+    console.log(req.body);
+    const existUser = await userService.getUserById(req.user.id)
+    if(!existUser) {
+      createError("User not found on server", 400)
+    }
+    
+    const user = await userService.updateUserByUserId(req.body.id, req.body.data)
+    delete user.password
+    
+    res.status(200).json({ user });
+  } catch (error) {
+    console.log(error);
+    next();
+  }
+}
+
 export async function createCircle(req, res, next) {
   // catchError()
   if (!req.body.circleName) {

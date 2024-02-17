@@ -41,9 +41,14 @@ export async function login (req,res,next) {
         const accessToken = jwtService.sign({ userId : existUser.id})
         delete existUser.password
 
-        res.status(200).json({accessToken, existUser})
+        res.status(200).json({accessToken, user: existUser})
     } catch (error) {
         console.log(error);
         next()
     }
+}
+
+export function getMe (req,res,next) {
+    console.log("getMe");
+    res.status(200).json({ user: req.user })
 }
