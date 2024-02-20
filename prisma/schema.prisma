@@ -33,17 +33,17 @@ model Member {
   id          Int           @id @default(autoincrement())
   circleId    Int           @map("circle_id")
   circle      Circle        @relation(fields: [circleId], references: [id])
-  userId      Int           @map("user_id")
-  user        User          @relation(fields: [userId], references: [id])
+  userId      Int?          @map("user_id")
+  user        User?         @relation(fields: [userId], references: [id])
   role        MemberRole    @default(AUTHOR)
-  bots        Bot[]
+  bot         Bot?
   participant Participant[]
 }
 
 model Bot {
   id       Int     @id @default(autoincrement())
   botName  String  @map("bot_name") @db.VarChar(40)
-  memberId Int     @map("member_id")
+  memberId Int     @map("member_id") @unique
   member   Member  @relation(fields: [memberId], references: [id])
   email    String? @db.VarChar(40)
 }

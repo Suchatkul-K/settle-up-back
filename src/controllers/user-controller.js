@@ -3,6 +3,7 @@ import * as memberService from "../services/member-service.js";
 import * as userService from "../services/user-service.js";
 import catchError from "../utils/catch-error.js";
 import createError from "../utils/create-error.js";
+import * as constanc from "../utils/constanc.js"
 
 export async function updateUser(req,res,next) {
   try {
@@ -40,6 +41,7 @@ export async function createCircle(req, res, next) {
     const newMember = await memberService.createMember({
       userId: req.user.id,
       circleId: newCircle.id,
+      role: constanc.ROLE.AUTHOR
     });
     console.log(newMember);
     res.status(201).json({ message: "circle created" });

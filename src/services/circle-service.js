@@ -6,4 +6,4 @@ export function getAllCircle (circles) { return prisma.circle.findMany({where: {
 
 export function updateCircleById (id,data) { return prisma.circle.update({ where: {id}, data})}
 
-export function getCircleDataByCircleId (id) { console.log(id); return prisma.circle.findUnique({where:{id}, include: {bills: true, members: true}})} 
+export function getCircleDataByCircleId (id) { return prisma.circle.findUnique({where:{id}, include: {bills: true, members: true}})} 

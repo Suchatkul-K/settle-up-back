@@ -13,6 +13,7 @@ const app = express();
 app.use(cors())
 app.use(express.json())
 
+// app.use("/circle/:circleId", (req,res,next)=>{console.log(req.params, req.body, req.url, req.method); next()})
 app.use("/auth", authRoute.router)
 app.use("/user", userRoute.router)
 app.use("/circle", circleRoute.router)
