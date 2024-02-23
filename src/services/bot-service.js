@@ -16,3 +16,28 @@ export function getAllBotInCircle(circleId) {
     // }
   });
 }
+
+export function deleteBotByMemberId(memberId) {
+  return prisma.bot.delete({
+    where: {
+      memberId,
+    },
+  })
+}
+
+export function updateBotNamebyMemberId(memberId,data) {
+  return prisma.bot.update({
+    where : {
+      memberId,
+    },
+    data
+  })
+}
+
+export function getBotByMemberId(memberId) {
+  return prisma.bot.findUnique({
+    where : {
+      memberId
+    }
+  })
+}

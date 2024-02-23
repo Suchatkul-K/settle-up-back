@@ -35,7 +35,24 @@ export function getAllMemberInCircle(circleId) {
       user: {
         select:{username: true}
       },
-      bot: {select: {botName: true}}
+      bot: {select: {botName: true}},
+      role: true,
     },
   });
+}
+
+export function deleteMemberByMemberId(memberId) {
+  return prisma.member.delete({
+    where: {
+      id: memberId
+    },
+  })
+}
+
+export function getMemberByMemberId(memberId) {
+  return prisma.member.findUnique({
+    where: {
+      id: memberId
+    }
+  })
 }

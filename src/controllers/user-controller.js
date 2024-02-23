@@ -7,7 +7,7 @@ import * as constanc from "../utils/constanc.js"
 
 export async function updateUser(req,res,next) {
   try {
-    console.log(req.body);
+    // console.log(req.body);
     const existUser = await userService.getUserById(req.user.id)
     if(!existUser) {
       createError("User not found on server", 400)
@@ -43,7 +43,7 @@ export async function createCircle(req, res, next) {
       circleId: newCircle.id,
       role: constanc.ROLE.AUTHOR
     });
-    console.log(newMember);
+    // console.log(newMember);
     res.status(201).json({ message: "circle created" });
   } catch (error) {
     console.log(error);
@@ -70,10 +70,10 @@ export async function getAllCircleByUserId(req, res, next) {
 
 export async function updateCircleNameByCircleId(req,res,next) {
     try {
-        console.log(req.body);
+        // console.log(req.body);
         const {id, data} = req.body
         const result = await circleService.updateCircleById(id, data)
-        console.log(result);
+        // console.log(result);
         res.status(200).json({ message: "edit" });
     } catch (error) {
         console.log(error);
